@@ -29,4 +29,6 @@ PPBEB_docs <- filter(tidydocs, as.character(str_trim(str_to_lower(last_name))) %
 
 WH_docs <- filter(tidydocs, as.character(str_trim(str_to_lower(last_name))) %in% WH)
 
-write.csv()
+write.csv(CYD_docs, file = "CYD.csv", na = "NA")
+write.csv(PPBEB_docs, file = "PPBEB.csv", na = "NA")
+write.csv(WH_docs, file = "WH.csv", na = "NA")
