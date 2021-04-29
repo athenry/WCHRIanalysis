@@ -10,8 +10,7 @@ library(splitstackshape)
 
 ## Read in data files downloaded from Web of Science
 filepathWCHRI <- dir("./data", pattern = "*.bib", recursive = TRUE, full.names = TRUE)
-D <- do.call("readFiles", as.list(filepathWCHRI))
-docs <- convert2df(D, dbsource = "wos", format = "bibtex")
+docs <- convert2df(filepathWCHRI, dbsource = "wos", format = "bibtex")
 tidydocs <- cSplit(docs, "AU", sep = ";", direction = "long") %>%
     separate(as.character("AU"), into = c("last_name", "initials"), remove = FALSE, extra = "merge")
 
@@ -37,6 +36,11 @@ authorList <- read_csv(file = "./data/WCHRI_Surnames.csv", col_names = c("Surnam
 authorList$Surname <- as.character(str_trim(str_to_lower(authorList$Surname)))
 tidydocs$last_name <- as.character(str_trim(str_to_lower(tidydocs$last_name)))
 
-tidydocs$member <- 
+flaggeddocs<- tidydocs %>% 
+     mutate(member=(last_name %in% authorList$Surname)*1)
 
-    
+collaboration <- flaggeddocs %>%
+    group_by(UT) %>%
+    summarise(n=sum(member))
+
+
