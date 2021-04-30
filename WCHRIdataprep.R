@@ -43,4 +43,30 @@ collaboration <- flaggeddocs %>%
     group_by(UT) %>%
     summarise(n=sum(member))
 
+collaboration$n <- as.factor(collaboration$n)
+summary(collaboration)
 
+## Better attempt at collaboration?
+filepathcollab <- dir("./address_data", pattern = "*.bib", recursive = TRUE, full.names = TRUE)
+collabdocs <- convert2df(filepathcollab, dbsource = "wos", format = "bibtex")
+
+## Keep only UAlberta authors
+collabdocs_long <- cSplit(collabdocs, "C1", sep = ";", direction = "long")
+UAcollabdocs <- collabdocs_long[grep("UNIV ALBERTA", C1), ]  
+
+UAcollabdocs_long <- UAcollabdocs %>% 
+    cSplit("AU", sep = ";", direction = "long") %>%
+    separate(as.character("AU"), into = c("last_name", "initials"), remove = FALSE, extra = "merge")
+
+UAcollabdocs_long$last_name <- as.character(str_trim(str_to_lower(UAcollabdocs_long$last_name)))
+
+flaggedcollab <- UAcollabdocs_long %>%
+    mutate(member=(last_name %in% authorList$Surname)*1)
+
+collab <- flaggedcollab %>%
+    group_by(UT) %>%
+    summarise(n=sum(member))
+
+collab$n <- as.factor(collab$n)
+summary(collab)
+    
