@@ -69,4 +69,10 @@ collab <- flaggedcollab %>%
 
 collab$n <- as.factor(collab$n)
 summary(collab)
-    
+
+collab_export <- UAcollabdocs %>%
+    group_by(UT) %>%
+    mutate(Address_number = paste("Address_", row_number())) %>%
+    pivot_wider(names_from = "Address_number", values_from = "C1")
+
+write.csv(collab_export, file = "UAcollab.csv", row.names = FALSE, col.names = TRUE)
